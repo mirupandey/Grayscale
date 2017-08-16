@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<canvas id="c" width="500" height="500"></canvas>
+
+	<script>
+		
+		var c = document.querySelector("#c"); //Creates a variable canvas that stores the canvas element object defined above the script so it can be manipulated.
+
+		var ctx = c.getContext("2d"); //Get's the 2d context of the canvas (basically all the pixels across and down) so they can be drawn/redrawn on the canvas.
+
+		var image = new Image();
+
+		image.onload = function(){
+			ctx.drawImage(image,0,0);
+			grayScale();
+		};
+
+		image.src = "fry.jpg";
+
+		var makePixelGrayScale = function (r, g, b, a) {
+
+			var y = (0.3 * r) + (0.59 * g) + (0.11 * b);
+			return{r : y, g : y, b : y};
+
+		}
+
+		function grayScale(){
+
+			var r, g, b, a;
+
+			var imageData = ctx.getImageData(0, 0, 500, 500); //This line gets the 2D image data from the context of the map - all pixels from the top-left corner (0,0) to the bottom-right corner (400,400). The width and height of the canvas is defined in the <canvas> element.
+
+			var numPixels = imageData.data.length /4; //means take the list of r, g, b, a values, and divide the length of the list by 4 to get the total number of pixels. Each pixel is defined by four consecutive list items, so dividing by four will give the total number of pixels in the image data string.
+
+			for(var i=0; i< numPixels; i++){ //Now that we know how many pixels there are, we loop over each pixel one at a time
+
+				r = imageData.data[i * 4 + 0];
+				g = imageData.data[i * 4 + 1];
+				b = imageData.data[i * 4 + 2];
+				a = imageData.data[i * 4 + 3];
+				pixel = makePixelGrayScale(r, g, b, a);
+				imageData.data[i * 4 + 0] = pixel.r;
+				imageData.data[i * 4 + 1] = pixel.g;
+				imageData.data[i * 4 + 2] = pixel.b;
+				imageData.data[i * 4 + 3] = pixel.a;
+				
+			}
+			ctx.putImageData(imageData, 0, 0); //Updates the canvas to write the new green pixel on the canvas.
+		}
+
+		//paintGreen(data); //That sends a string containing the current r, g, b, a data for each pixel in the canvas to the paintGreen function. The function figures out how many pixels there are in the string of repeating r, g, b, a data. The string of pixel data contains, values for red, green, blue and alpha(opacity) for each pixel. But it's all one long list, one pixel is not differentiated from the next.
+
+	</script>
+</body>
+</html>
